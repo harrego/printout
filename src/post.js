@@ -1,17 +1,16 @@
 const sanitizeHtml = require("sanitize-html")
 const marked = require("marked")
-const { v4: uuidv4 } = require("uuid")
 
 class Post {
-    id = null;
-    title = null;
-    datePublished = null;
-    dateUpdated = null;
-    authorName = null;
-    content = null;
-    contentType = null;
-    summary = null;
-    link = null;
+    id = null
+    title = null
+    datePublished = null
+    dateUpdated = null
+    authorName = null
+    body = null
+    bodyType = null
+    summary = null
+    link = null
 
     constructor(title, datePublished = new Date()) {
         this.title = title
@@ -26,29 +25,36 @@ class Post {
         this.id = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}-${titleId}`
     }
 
-    setMarkdownContent(content) {
-        this.content = content
-        this.contentType = "markdown"
+    setMarkdownBody(body) {
+        this.body = body
+        this.bodyType = "markdown"
     }
 
-    getHTMLContent() {
-        if (this.contentType == "markdown") {
-            const html = sanitizeHtml(marked.parse(this.content))
+    getHTMLBody() {
+        if (this.bodyType == "markdown") {
+            const html = sanitizeHtml(marked.parse(this.body))
             return html
         } else {
             return null
         }
     }
 
-    get object() {
-        const { ...object } = this
-        if (this.datePublished) {
-            object.datePublished = this.datePublished.toISOString()
+    get json() {
+        const json = {
+            id: this.id,
+            title: this.title,
+            date_published: this.datePublished.toISOString(),
+            date_updated: null,
+            author_name: this.authorName,
+            body: this.body,
+            body_type: this.bodyType,
+            summary: this.summary,
+            link: this.link
         }
         if (this.dateUpdated) {
-            object.dateUpdated = this.dateUpdated.toISOString()
+            json.date_updated = this.dateUpdated.toISOString()
         }
-        return object
+        return json
     }
 }
 exports.Post = Post

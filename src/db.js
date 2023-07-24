@@ -1,4 +1,5 @@
 const { Post } = require("./post")
+const { Auth } = require("./auth")
 
 function setup(db) {
     db.prepare(`CREATE TABLE IF NOT EXISTS posts (
@@ -7,37 +8,42 @@ function setup(db) {
         date_published DATETIME NOT NULL,
         date_updated DATETIME,
         author_name TEXT,
-        content TEXT,
-        content_type TEXT,
+        body TEXT,
+        body_type TEXT,
         summary TEXT,
         link TEXT
+    )`).run()
+
+    db.prepare(`CREATE TABLE IF NOT EXISTS auth (
+        token TEXT PRIMARY KEY,
+        date_issued DATETIME NOT NULL
     )`).run()
 }
 exports.setup = setup
 
 function insertPost(db, post) {
-    const postObject = post.object
+    const postJson = post.json
     db.prepare(`INSERT INTO posts (
         id,
         title,
         date_published,
         date_updated,
         author_name,
-        content,
-        content_type,
+        body,
+        body_type,
         summary,
         link
     ) VALUES (
         @id,
         @title,
-        @datePublished,
-        @dateUpdated,
-        @authorName,
-        @content,
-        @contentType,
+        @date_published,
+        @date_updated,
+        @author_name,
+        @body,
+        @body_type,
         @summary,
         @link
-    )`).run(postObject)
+    )`).run(postJson)
 }
 exports.insertPost = insertPost
 
@@ -48,8 +54,8 @@ function serializePostRow(row) {
         post.dateUpdated = new Date(row.date_updated)
     }
     post.authorName = row.author_name
-    post.content = row.content
-    post.contentType = row.content_type
+    post.body = row.body
+    post.bodyType = row.body_type
     post.summary = row.summary
     post.link = row.link
     return post
@@ -76,3 +82,24 @@ function getRecentPosts(db, limit = 30) {
     return posts
 }
 exports.getRecentPosts = getRecentPosts
+
+function insertAuthToken(db, auth) {
+    const authJson = auth.json
+    db.prepare("INSERT INTO auth (token, date_issued) VALUES (@token, @date_issued)").run(authJson)
+}
+exports.insertAuthToken = insertAuthToken
+
+function serializeAuthRow(row) {
+    const auth = new Auth()
+    auth.token = row.token
+    auth.dateIssued = new Date(row.date_issued)
+    return auth
+}
+function getAuthFromToken(db, token) {
+    const row = db.prepare("SELECT * FROM auth WHERE token = ?").get(token)
+    if (row == null) {
+        return null
+    }
+    return serializeAuthRow(row)
+}
+exports.getAuthFromToken = getAuthFromToken
