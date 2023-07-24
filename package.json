@@ -1,0 +1,21 @@
+{
+  "name": "printout-rss",
+  "version": "0.1.0",
+  "description": "RSS feed with a web frontend for posting",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Harry Stanton",
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^8.5.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "marked": "^5.1.1",
+    "sanitize-html": "^2.11.0",
+    "uuid": "^9.0.0"
+  }
+}
