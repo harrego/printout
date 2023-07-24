@@ -1,6 +1,11 @@
 const sanitizeHtml = require("sanitize-html")
 const marked = require("marked")
 
+marked.use({
+    mangle: false,
+    headerIds: false
+})
+
 class Post {
     id = null
     title = null

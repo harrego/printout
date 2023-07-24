@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><%= feed.name %></title>
+  <link rel="self" href="<%= feed.link %>"/>
+  <updated><%= feed.last_updated %></updated>
+  <author>
+    <name><%= feed.author %></name>
+  </author>
+  <id><%= feed.link %></id>
+  <% if (feed.icon_url) { %>
+  <icon><%= feed.icon_url %></icon>
+  <% } %>
+
+<% for (post of posts) { %>
+  <entry>
+    <title><%= post.title %></title>
+    
+    <id><%= post.link %></id>
+    <link rel="alternate" type="text/html" href="<%= post.link %>" />
+    <published><%= post.date_published %></published>
+
+    <% if (post.date_updated) { %>
+    <updated><%= post.date_updated %></updated>
+    <% } else { %>
+    <updated><%= post.date_published %></updated>
+    <% } %>
+
+    <% if (post.summary) { %>
+    <summary><%= post.summary %></summary>
+    <% } %>
+    <% if (post.link) { %>
+
+    <% } %>
+    <% if (post.author_name) { %>
+    <author>
+        <name><%= post.author_name %></name>
+    </author>
+    <% } %>
+
+    <content type="html"><![CDATA[
+<%- post.body_html %>
+    ]]></content>
+  </entry>
+<% } %>
+
+</feed>

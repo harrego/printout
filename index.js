@@ -13,6 +13,10 @@ const cookieParser = require("cookie-parser")
 app.use(cookieParser())
 
 app.use("/api", require("./routes/api"))
+app.use("/feed", require("./routes/feed"))
+app.set("view engine", "ejs")
+
+app.use("/static", express.static("static"))
 
 const db = require("better-sqlite3")("db.sqlite3")
 const dbHelper = require("./src/db")
@@ -47,14 +51,3 @@ const port = process.env.PORT || 3000
 app.listen(port, () => {
     console.log(`running on port ${port}`)
 })
-
-
-
-// var examplePost = new Post("An Example Post")
-// examplePost.setMarkdownContent("# example")
-// console.log(examplePost.getHTMLContent())
-// console.log(examplePost)
-
-// // dbHelper.insertPost(db, examplePost)
-
-// console.log(dbHelper.getRecentPosts(db))
