@@ -32,6 +32,14 @@ app.get("/", (req, res) => {
     res.render("app/index", {})
 })
 
+app.get("/posts", (req, res) => {
+    res.render("app/posts", {})
+})
+
+app.get("/new", (req, res) => {
+    res.render("app/new", {})
+})
+
 const port = process.env.PORT || 3000
 app.listen(port, () => {
     console.log(`running on port ${port}`)
