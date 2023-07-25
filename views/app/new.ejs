@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Printout</title>
-        <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+        <%- include("components/head") %>
         <style>
-            .container {
+            /* .container {
                 max-width: 600px;
-            }
+            } */
 
             #metadata-button.collapsed .hide {
                 display: none;
@@ -19,9 +17,11 @@
         </style>
     </head>
     <body>
+        <%- include("components/header", { page: page }) %>
+
         <div class="container">
             <div class="row">
-                <h3 class="mb-4">New post</h3>
+                <h4 class="my-4">New post</h4>
                 <form class="needs-validation" id="new-post-form" novalidate>
                     <div class="row g-3">
 
@@ -96,7 +96,7 @@
                 </form>
             </div>
         </div>
-        <script src="/static/js/bootstrap.min.js"></script>
+        <%- include("components/body-footer") %>
         <script>
             var form = document.getElementById("new-post-form")
 

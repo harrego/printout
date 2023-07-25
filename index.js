@@ -33,11 +33,20 @@ app.get("/", (req, res) => {
 })
 
 app.get("/posts", (req, res) => {
-    res.render("app/posts", {})
+    const db = req.app.get("db")
+    var posts = dbHelper.getRecentPosts(db)
+
+    posts.forEach(post => {
+        const date = post.datePublished
+        const months = ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"]
+        post.datePublishedString = `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
+    })
+
+    res.render("app/posts", { page: "posts", posts: posts })
 })
 
 app.get("/new", (req, res) => {
-    res.render("app/new", {})
+    res.render("app/new", { page: "new" })
 })
 
 const port = process.env.PORT || 3000

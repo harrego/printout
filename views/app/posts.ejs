@@ -1,49 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Printout</title>
-        <link href="/static/css/bootstrap.min.css" rel="stylesheet">
-        <style>
-            .container {
-                max-width: 750px;
-            }
-        </style>
+        <%- include("components/head") %>
     </head>
     <body>
-        <header class="border-bottom pt-3 pb-3">
-            <div class="container d-flex flex-wrap align-items-center justify-content-between">
-                <div class="col-12 col-md-auto text-center text-md-left">
-                    <h4 class="m-0">Printout</h4>
-                </div>
-                <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-                    <li><a class="nav-link px-2" href="/">Home</a></li>
-                    <li><a class="nav-link px-2" href="/">Feed</a></li>
-                    <li><a class="nav-link px-2 link-secondary" href="/">Posts</a></li>
-                    <li><a class="nav-link px-2" href="/">New</a></li>
-                    <li><a class="nav-link px-2" href="/">Logout</a></li>
-                </ul>
-            </div>
-        </header>
+        <%- include("components/header", { page: page }) %>
 
         <div class="container">
             <div class="row border-bottom py-1">
                 <div class="col d-flex flex-wrap justify-content-between align-items-center py-2">
-                    <p class="m-0">12 posts</p>
+                    <p class="m-0"><%= posts.length %> posts</p>
                     <div>
                         <button class="btn btn-primary" type="submit">New</button>
                     </div>
                 </div>
             </div>
 
-            <% for (var i = 0; i < 10; i++) { %>
-            <div class="row border-bottom py-3 <#<%= i % 2 == 0 ? 'bg-light' : 'bg-body' %>#>">
+            <% for (var post of posts) { %>
+            <div class="row border-bottom py-3">
                 <div class="col">
                     <div class="col d-flex justify-content-between align-items-center">
                         <div>
-                            <p class="m-0"><b>An Example Post <%= i+1 %></b></p>
-                            <p class="m-0">June 3, 2023</p>
+                            <p class="m-0"><b><%= post.title %></b></p>
+                            <p class="m-0"><%= post.datePublishedString %></p>
                         </div>
                         <div>
                             <button class="btn btn-light" type="submit">Edit</button>
@@ -54,7 +34,7 @@
             <% } %>
             
         </div>
-        <script src="/static/js/bootstrap.min.js"></script>
+        <%- include("components/body-footer") %>
         <script>
 
         </script>
