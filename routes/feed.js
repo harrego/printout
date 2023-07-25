@@ -5,17 +5,6 @@ const dbHelper = require("../src/db")
 
 const url = "http://localhost:3000"
 
-// wrapper for html trim blank lines
-// router.use((req, res, next) => {
-// 	res.oldRender = res.render
-// 	res.render = function(view, options, callback) {
-//         res.set("Content-Type", "application/atom+xml; charset=utf-8")
-// 		res.oldRender(view, options, callback)
-// 	}
-
-// 	return next()
-// })
-
 router.get("/:token/atom.xml", (req, res) => {
     function reject() {
         res.status(404).send("<p>no auth</p>")
@@ -42,7 +31,7 @@ router.get("/:token/atom.xml", (req, res) => {
         } else if (post.datePublished > lastUpdated) {
             lastUpdated = post.datePublished
         }
-        
+
         const data = post.json
         data.link = `${url}/post/${data.id}`
         data.body_html = post.getHTMLBody()

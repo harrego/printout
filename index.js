@@ -47,6 +47,10 @@ app.get("/logout", (req, res) => {
 
 })
 
+app.get("/", (req, res) => {
+    res.render("app/index", {})
+})
+
 const port = process.env.PORT || 3000
 app.listen(port, () => {
     console.log(`running on port ${port}`)

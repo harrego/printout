@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Printout</title>
+        <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            .container {
+                max-width: 600px;
+            }
+
+            #metadata-button.collapsed .hide {
+                display: none;
+            }
+            #metadata-button:not(.collapsed) .show {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <h3 class="mb-4">New post</h3>
+                <form class="needs-validation" id="new-post-form" novalidate>
+                    <div class="row g-3">
+
+                        <!-- Title -->
+                        <div class="col-12">
+                            <label class="form-label" for="title">Title</label>
+                            <input id="title" class="form-control" type="text" required>
+                            <div class="invalid-feedback">
+                                A post title is required.
+                            </div>
+                        </div>
+
+                        <!-- ID -->
+                        <div class="col-12">
+                            <label class="form-label" for="id">ID</label>
+                            <input id="id" class="form-control" type="text">
+                            <div class="invalid-feedback">
+                                Post with ID already exists.
+                            </div>
+                        </div>
+
+                        <!-- Body -->
+                        <div class="col-12">
+                            <label class="form-label" for="body">Body <i>(Markdown)</i></label>
+                            <textarea id="body" class="form-control" rows="10" required></textarea>
+                            <div class="invalid-feedback">
+                                Duplicate ID.
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="m-0 w-100 d-flex align-items-center">
+                                <h4 class="m-0 me-auto">Metadata</h4>
+                                <button id="metadata-button" class="btn btn-primary collapsed" data-bs-toggle="collapse" data-bs-target="#metadata" type="button">
+                                    <span class="show">Show</span>
+                                    <span class="hide">Hide</span>
+                                </button>
+                        </div>
+
+                        <div class="collapse" id="metadata">
+                            <div class="col-12">
+                                <label class="form-label" for="date-published">Date published</label>
+                                <input type="datetime-local" class="form-control" id="date-published">
+                            </div>
+
+                            <!-- Summary -->
+                            <div class="col-12">
+                                <label class="form-label" for="body">Summary</label>
+                                <textarea id="summary" class="form-control"></textarea>
+                            </div>
+
+                            <!-- Author -->
+                            <div class="col-12">
+                                <label class="form-label" for="title">Author</label>
+                                <input id="title" class="form-control" type="text">
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Submit Button -->
+                        <div class="col-12">
+                            <button class=" btn btn-primary btn-1g" type="submit">Publish post</button>
+                        </div>
+                    </div>
+
+                    <!-- <hr class="my-4"> -->
+                    <!-- <div class="col-2"> -->
+                        
+                    <!-- </div> -->
+                </form>
+            </div>
+        </div>
+        <script src="/static/js/bootstrap.min.js"></script>
+        <script>
+            var form = document.getElementById("new-post-form")
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+
+            var datePublished = document.getElementById("date-published")
+            function getPostDatePublished() {
+                var dateString = datePublished.value
+                if (dateString && dateString.length > 0) {
+                    var date = new Date(dateString)
+                    return date || new Date()
+                } else {
+                    return new Date()
+                }
+            }
+
+            function idFromTitle(title, date) {
+                const titleId = title
+                    .trim()
+                    .toLowerCase()
+                    .replace(/[\s_]/g, "-")
+                    .replace(/[^0-9a-z-]/g, "")
+                var day = ("0" + date.getDate()).slice(-2)
+                var month = ("0" + (date.getMonth()+1)).slice(-2)
+                return `${date.getFullYear()}-${month}-${day}-${titleId}`
+            }
+
+            var idInput = document.getElementById("id")
+
+            var shouldUpdateIdInput = true
+            idInput.addEventListener("input", function(e) {
+                shouldUpdateIdInput = idInput.value == ""
+            })
+
+            var titleInput = document.getElementById("title")
+
+            function updateIdInput() {
+                var newTitle = titleInput.value
+                if (newTitle.length <= 0) {
+                    idInput.value = ""
+                    return
+                }
+
+                var datePublished = getPostDatePublished()
+                var postId = idFromTitle(titleInput.value, datePublished)
+                idInput.value = postId
+            }
+            
+            titleInput.addEventListener("input", function(e) {
+                if (!shouldUpdateIdInput) {
+                    return
+                }
+                updateIdInput()
+            })
+
+            datePublished.addEventListener("input", function(e) {
+                if (!shouldUpdateIdInput) {
+                    return
+                }
+                if (!(new Date(e.target.value))) {
+                    return
+                }
+                updateIdInput()
+            })
+
+        </script>
+    </body>
+</html>
