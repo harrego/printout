@@ -24,27 +24,8 @@ dbHelper.setup(db)
 
 app.set("db", db)
 
-app.post("/login", async (req, res) => {
-    const password = req.body.password
-    if (!password || password != "password") {
-        res.status(400).send(http.errorBody(http.errors.invalidCredentials))
-        return
-    }
-    const auth = new Auth()
-    try {
-        await auth.generateToken()
-        dbHelper.insertAuthToken(db, auth)
-        res.cookie("token", auth.token)
-        res.redirect("/")
-    } catch (err) {
-        console.log(err)
-        res.status(500).send(http.errorBody(http.errors.unknown))
-        return
-    }
-})
-
-app.get("/logout", (req, res) => {
-
+app.get("/login", (req, res) => {
+    res.render("app/login", {})
 })
 
 app.get("/", (req, res) => {

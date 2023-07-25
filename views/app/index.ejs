@@ -37,7 +37,7 @@
                         <!-- ID -->
                         <div class="col-12">
                             <label class="form-label" for="id">ID</label>
-                            <input id="id" class="form-control" type="text">
+                            <input id="id" class="form-control" type="text" required>
                             <div class="invalid-feedback">
                                 Post with ID already exists.
                             </div>
@@ -48,7 +48,7 @@
                             <label class="form-label" for="body">Body <i>(Markdown)</i></label>
                             <textarea id="body" class="form-control" rows="10" required></textarea>
                             <div class="invalid-feedback">
-                                Duplicate ID.
+                                Post requires a body.
                             </div>
                         </div>
 
@@ -77,7 +77,7 @@
                             <!-- Author -->
                             <div class="col-12">
                                 <label class="form-label" for="title">Author</label>
-                                <input id="title" class="form-control" type="text">
+                                <input id="author" class="form-control" type="text">
                             </div>
                         </div>
 
@@ -99,17 +99,10 @@
         <script src="/static/js/bootstrap.min.js"></script>
         <script>
             var form = document.getElementById("new-post-form")
-            form.addEventListener('submit', function (event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault()
-                    event.stopPropagation()
-                }
-                form.classList.add('was-validated')
-            }, false)
 
-            var datePublished = document.getElementById("date-published")
+            var datePublishedInput = document.getElementById("date-published")
             function getPostDatePublished() {
-                var dateString = datePublished.value
+                var dateString = datePublishedInput.value
                 if (dateString && dateString.length > 0) {
                     var date = new Date(dateString)
                     return date || new Date()
@@ -157,7 +150,7 @@
                 updateIdInput()
             })
 
-            datePublished.addEventListener("input", function(e) {
+            datePublishedInput.addEventListener("input", function(e) {
                 if (!shouldUpdateIdInput) {
                     return
                 }
@@ -167,6 +160,39 @@
                 updateIdInput()
             })
 
+            var bodyTextArea = document.getElementById("body")
+            var authorNameInput = document.getElementById("author")
+            var summaryInput = document.getElementById("summary")
+            var postButton = document.getElementById("post")
+
+            function submitNewPost() {
+                var data = {
+                    title: titleInput.value,
+                    id: idInput.value,
+                    body: bodyTextArea.value,
+                    body_type: "markdown"
+                }
+                if (authorNameInput.value.length > 0) {
+                    data.author_name = authorNameInput.value
+                }
+                if (summaryInput.value.length > 0) {
+                    data.summary = summaryInput.value
+                }
+
+                
+            }
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault()
+                form.classList.add('was-validated')
+                if (!form.checkValidity()) {
+                    // event.preventDefault()
+                    event.stopPropagation()
+                    return
+                }
+
+                submitNewPost()
+            }, false)
         </script>
     </body>
 </html>

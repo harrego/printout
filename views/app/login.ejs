@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Printout</title>
+        <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            main {
+                height: 100vh;
+            }
+            .col {
+                max-width: 300px;
+            }
+        </style>
+    </head>
+    <body>
+        <main class="d-flex align-items-center justify-content-center">
+            <div class="col">
+                <h3 class="mb-4 text-center">Login</h3>
+                <form class="needs-validation" id="login-form" novalidate>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input type="password" class="form-control" id="password" required>
+                                <label for="password">Password</label>
+                                <div id="password-invalid" class="invalid-feedback">
+                                    Password is required.
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-12">
+                            <button id="submit" class="btn btn-primary w-100" type="submit">
+                                <span id="login-spinner" style="display: none" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script src="/static/js/bootstrap.min.js"></script>
+        <script>
+            if (localStorage.getItem("token")) {
+                window.location.replace("/")
+            }
+            var form = document.getElementById("login-form")
+            var passwordInput = document.getElementById("password")
+            var formButton = document.getElementById("submit")
+            var formSpinner = document.getElementById("login-spinner")
+            var passwordInvalidLabel = document.getElementById("password-invalid")
+            var defaultPasswordInvalid = passwordInvalidLabel.innerHTML
+
+            passwordInput.addEventListener("input", function(e) {
+                // if (!form.checkValidity()) {
+                    form.classList.remove("was-validated")
+                // }
+                passwordInput.classList.remove("is-invalid")
+            })
+
+            function error(msg) {
+                passwordInvalidLabel.innerText = msg
+                passwordInput.classList.add("is-invalid")
+            }
+            
+            function updateSpinner(status) {
+                formSpinner.style.display = status ? "" : "none"
+                formButton.disabled = status
+            }
+
+            form.addEventListener("submit", async function(e) {
+                passwordInvalidLabel.innerHTML = defaultPasswordInvalid
+
+                passwordInput.classList.remove("is-invalid")
+                event.preventDefault()
+                form.classList.add('was-validated')
+                if (!form.checkValidity()) {
+                    event.stopPropagation()
+                    return
+                }
+
+                form.classList.remove("was-validated")
+
+                e.preventDefault()
+                
+                updateSpinner(true)
+                var body = {
+                    password: passwordInput.value
+                }
+
+                try {
+                    var response = await fetch("/api/login", {
+                        method: "POST",
+                        credentials: "include",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(body)
+                    })
+                    updateSpinner(false)
+                    var json = await response.json()
+
+                    if (!json.success) {
+                        error(json.error.body)
+                        return
+                    }
+
+                    if (json.token) {
+                        localStorage.setItem("token", json.token)
+                        window.location.replace("/")
+                    } else {
+                        error("An unknown error occurred.")
+                    }
+                } catch (err) {
+                    updateSpinner(false)
+                    error("An unknown error occurred.")
+                    console.log(err)
+                }
+            })
+        </script>
+    </body>
+</html>

@@ -5,6 +5,30 @@ const http = require("../src/http")
 const dbHelper = require("../src/db")
 
 const { Post } = require("../src/post")
+const { Auth } = require("../src/auth")
+
+router.post("/login", async (req, res) => {
+    const password = req.body.password
+    if (!password || password != "password") {
+        res.status(400).send(http.errorBody(http.errors.invalidCredentials))
+        return
+    }
+    const auth = new Auth()
+    try {
+        const db = req.app.get("db")
+        await auth.generateToken()
+        dbHelper.insertAuthToken(db, auth)
+        res.cookie("token", auth.token, { httpOnly: true })
+        res.send({
+            success: true,
+            token: auth.token
+        })
+    } catch (err) {
+        console.log(err)
+        res.status(500).send(http.errorBody(http.errors.unknown))
+        return
+    }
+})
 
 router.use((req, res, next) => {
     function rejectAuthorization() {
