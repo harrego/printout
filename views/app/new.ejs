@@ -85,7 +85,13 @@
 
                         <!-- Submit Button -->
                         <div class="col-12">
-                            <button class=" btn btn-primary btn-1g" type="submit">Publish post</button>
+                            <button id="publish" class="btn btn-primary btn-1g" type="submit">
+                                <span id="publish-spinner" style="display: none" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Publish post
+                            </button>
+                            <div id="publish-invalid" class="invalid-feedback">
+                                An unknown error occurred.
+                            </div>
                         </div>
                     </div>
 
@@ -163,26 +169,51 @@
             var bodyTextArea = document.getElementById("body")
             var authorNameInput = document.getElementById("author")
             var summaryInput = document.getElementById("summary")
-            var postButton = document.getElementById("post")
+            var spinner = document.getElementById("publish-spinner")
+            var publishButton = document.getElementById("publish")
+            var publishInvalidLabel = document.getElementById("publish-invalid")
 
-            function submitNewPost() {
-                var data = {
+            function updateSpinner(status) {
+                spinner.style.display = status ? "" : "none"
+                spinner.disabled = status
+            }
+
+            function error(msg) {
+                publishInvalidLabel.innerText = msg
+                publishButton.classList.add("is-invalid")
+            }
+
+            async function submitNewPost() {
+                var body = {
                     title: titleInput.value,
                     id: idInput.value,
                     body: bodyTextArea.value,
                     body_type: "markdown"
                 }
                 if (authorNameInput.value.length > 0) {
-                    data.author_name = authorNameInput.value
+                    body.author_name = authorNameInput.value
                 }
                 if (summaryInput.value.length > 0) {
-                    data.summary = summaryInput.value
+                    body.summary = summaryInput.value
                 }
 
+                var token = localStorage.getItem("token")
                 
+                var response = await fetch("/api/post", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(body)
+                })
+                var json = await response.json()
+                return json
             }
 
-            form.addEventListener('submit', function (event) {
+            form.addEventListener('submit', async function (event) {
+                publishButton.classList.remove("is-invalid")
+
                 event.preventDefault()
                 form.classList.add('was-validated')
                 if (!form.checkValidity()) {
@@ -191,7 +222,20 @@
                     return
                 }
 
-                submitNewPost()
+                updateSpinner(true)
+                try {
+                    var status = await submitNewPost()
+                    updateSpinner(false)
+                    if (status.success) {
+                        window.location.replace("/posts")
+                    } else {
+                        error(status.error.body)
+                    }
+                } catch (err) {
+                    updateSpinner(false)
+                    error("An unknown error occurred.")
+                    console.log(err)
+                }
             }, false)
         </script>
     </body>
